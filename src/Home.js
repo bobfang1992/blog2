@@ -4,7 +4,7 @@ import { articles } from './ArticleData'
 function ArticleListing(article) {
     return (
         <>
-            <a href={`/blog/` + article.url}><h2>{article.title}</h2></a>
+            <a href={article.url}><h2>{article.title}</h2></a>
             <p>{article.date}</p>
         </>
     )
