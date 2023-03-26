@@ -4,7 +4,6 @@ import Home from './Home'
 import About from './About'
 
 import { Component as HelloWorld } from "./blog/HelloWorld";
-import { Component as CppAPI } from "./blog/CppAPI";
 
 function NavBar(user) {
   return (
@@ -27,7 +26,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/blog/hello-world" element={<HelloWorld />} />
-            <Route path="/blog/cpp-api-design" element={<CppAPI />} />
           </Routes>
         </div>
 
