@@ -18,7 +18,7 @@ function Home() {
             <ul>
                 {
                     articles.map((article) => (
-                        <li>{ArticleListing(article)}</li>
+                        <li key={article.url}>{ArticleListing(article)}</li>
                     ))}
             </ul>
         </>

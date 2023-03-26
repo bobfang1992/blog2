@@ -1,5 +1,5 @@
 
-export function HelloWorld(params) {
+export function Component(params) {
     return (
         <>
             <h1>Hello World</h1>

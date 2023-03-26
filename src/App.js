@@ -3,7 +3,7 @@ import { Route, Routes, Link } from "react-router-dom"
 import Home from './Home'
 import About from './About'
 
-import { HelloWorld } from "./blog/HelloWorld";
+import { Component as HelloWorld } from "./blog/HelloWorld";
 
 function NavBar(user) {
   return (
@@ -33,7 +33,7 @@ function App() {
         <footer>
           <hr></hr>
           <h2>Contact</h2>
-          <a class="twitter-share-button"
+          <a className="twitter-share-button"
             href="https://twitter.com/intent/tweet?text=@bobfang1992">
             twitter</a>
         </footer>
