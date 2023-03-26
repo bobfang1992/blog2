@@ -10,5 +10,6 @@ export class ArticleData {
 }
 
 export const articles = [
+    new ArticleData("C++ API Design", "2021-03-26", "cpp-api-design"),
     new ArticleData("Hello World", "2023-03-26", "hello-world"),
 ];
