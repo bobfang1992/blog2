@@ -3,6 +3,8 @@ import { Route, Routes, Link } from "react-router-dom"
 import Home from './Home'
 import About from './About'
 
+import { HelloWorld } from "./blog/HelloWorld";
+
 function NavBar(user) {
   return (
     <ul className='navbar-ul'>
@@ -23,6 +25,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/blog/hello-world" element={<HelloWorld />} />
           </Routes>
         </div>
 
