@@ -9,8 +9,19 @@ app.use(cors());
 const NOTION_API_BASE_URL = "https://api.notion.com/v1";
 const NOTION_API_KEY = functions.config().notion.key;
 
+const cache = new Map();
+const CACHE_EXPIRATION = 5 * 60 * 1000; // 1 minute in milliseconds
+
 app.post("/query", function (req, res) {
   const { databaseId } = req.query;
+
+  const currentTime = Date.now();
+  const cachedData = cache.get(databaseId);
+
+  if (cachedData && currentTime - cachedData.timestamp < CACHE_EXPIRATION) {
+    res.json(cachedData.data);
+    return;
+  }
 
   axios
     .post(
@@ -25,14 +36,14 @@ app.post("/query", function (req, res) {
       }
     )
     .then((response) => {
-      res.json(response.data);
+      const data = response.data;
+      cache.set(databaseId, { data, timestamp: currentTime });
+      res.json(data);
     })
     .catch((error) => {
       console.error("Error fetching data from Notion API:", error);
-      res.status(500).json({ error: "An error occurred while fetching data from Notion API" });
+      res.status(500).json({ error: "An error occurred while fetching data from Notion API", message: error.message });
     });
 });
 
-
 exports.notionProxy = functions.https.onRequest(app);
-
