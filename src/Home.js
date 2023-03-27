@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { articles } from './ArticleData'
-import { Client } from "@notionhq/client";
+import { articles, ArticleData } from './ArticleData';
 
-const notion = new Client({
-    auth: process.env.REACT_APP_NOTION_API_KEY,
-});
+const notion_api = "https://us-central1-bobfang-blog-notion-proxy.cloudfunctions.net/notionProxy";
 
-function ArticleListing(article) {
+function ArticleListing({ title, date, url }) {
     return (
         <>
-            <a href={article.url}><h2>{article.title}</h2></a>
-            <p>{article.date}</p>
+            <a href={url}><h2>{title}</h2></a>
+            <p>{date}</p>
         </>
-    )
+    );
+}
+
+function parseToArticleData(pages) {
+    return pages.map(page => {
+        const title = page.properties.Name.title[0].plain_text;
+        const date = new Date(page.created_time);
+        const url = page.url.replace("https://www.notion.so", "https://dorafmon.notion.site");
+        return new ArticleData(title, date, url);
+    });
 }
 
 function Home() {
@@ -22,9 +28,15 @@ function Home() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await notion.databases.query({ database_id: databaseId });
-                const items = response.results.map((item) => item.title[0].plain_text);
-                setItems(items);
+                const response = await fetch(`${notion_api}/query?databaseId=${databaseId}`, {
+                    method: "POST",
+                });
+                const data = await response.json();
+                const items = data.results;
+                let articleDataArray = parseToArticleData(items);
+                articleDataArray = [...articleDataArray, ...articles];
+                articleDataArray.sort((a, b) => b.date - a.date);
+                setItems([...articleDataArray]);
             } catch (error) {
                 console.error("Error fetching Notion data:", error);
             }
@@ -32,18 +44,19 @@ function Home() {
 
         fetchData();
     }, [databaseId]);
-    console.log(items);
+
     return (
         <>
             <h1>Blog Roll</h1>
-
             <ul>
-                {
-                    articles.map((article) => (
-                        <li key={article.url}>{ArticleListing(article)}</li>
-                    ))}
+                {items.map((article) => (
+                    <li key={article.url}>
+                        <ArticleListing title={article.title} date={article.date} url={article.url} />
+                    </li>
+                ))}
             </ul>
         </>
-    )
+    );
 }
+
 export default Home;
