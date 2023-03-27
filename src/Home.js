@@ -22,7 +22,9 @@ function parseToArticleData(pages) {
 }
 
 function Home() {
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState(articles);
+    const [isLoading, setIsLoading] = useState(true);
+
     const databaseId = "c3561f23082f491fa4b502a83db609ea";
 
     useEffect(() => {
@@ -39,6 +41,8 @@ function Home() {
                 setItems([...articleDataArray]);
             } catch (error) {
                 console.error("Error fetching Notion data:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -48,13 +52,17 @@ function Home() {
     return (
         <>
             <h1>Blog Roll</h1>
-            <ul>
-                {items.map((article) => (
-                    <li key={article.url}>
-                        <ArticleListing title={article.title} date={article.date} url={article.url} />
-                    </li>
-                ))}
-            </ul>
+            {isLoading ? (
+                <p>Loading...</p>
+            ) : (
+                <ul>
+                    {items.map((article) => (
+                        <li key={article.url}>
+                            <ArticleListing title={article.title} date={article.date} url={article.url} />
+                        </li>
+                    ))}
+                </ul>
+            )}
         </>
     );
 }
