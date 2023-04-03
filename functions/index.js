@@ -2,6 +2,9 @@ const functions = require("firebase-functions");
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const { PubSub } = require("@google-cloud/pubsub");
+
+const pubSubClient = new PubSub();
 
 const app = express();
 app.use(cors());
@@ -47,3 +50,34 @@ app.post("/query", function (req, res) {
 });
 
 exports.notionProxy = functions.https.onRequest(app);
+
+function callNotionProxy(databaseId) {
+  return new Promise((resolve, reject) => {
+    const message = { databaseId };
+    const messageId = pubSubClient.topic('notion-proxy').publishJSON(message);
+    messageId
+      .then((messageId) => {
+        console.log(`Message ${messageId} published.`);
+        resolve();
+      })
+      .catch((error) => {
+        console.error('Error publishing message:', error);
+        reject(error);
+      });
+  });
+}
+
+exports.scheduledFunction = functions.pubsub
+  .schedule("every 1 minutes")
+  .onRun(async (context) => {
+    // Call your existing function here with the appropriate databaseId
+    const databaseId = "c3561f23082f491fa4b502a83db609ea";
+    await callNotionProxy(databaseId);
+  });
+
+exports.notionProxyTrigger = functions.pubsub
+  .topic("notion-proxy")
+  .onPublish(async (message) => {
+    const { databaseId } = message.json;
+    await app.post("/query", { query: { databaseId } });
+  });
