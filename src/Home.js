@@ -14,7 +14,7 @@ function ArticleListing({ title, date, url }) {
 
 function parseToArticleData(pages) {
     return pages.map(page => {
-        const title = page.properties.Name.title[0].plain_text;
+        const title = page.properties.Name.title.at(-1).plain_text;
         const date = new Date(page.created_time);
         const url = page.url.replace("https://www.notion.so", "https://dorafmon.notion.site");
         return new ArticleData(title, date, url);
@@ -34,6 +34,7 @@ function Home() {
                     method: "POST",
                 });
                 const data = await response.json();
+                console.log(data);
                 const items = data.results;
                 let articleDataArray = parseToArticleData(items);
                 articleDataArray = [...articleDataArray, ...articles];
