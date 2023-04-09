@@ -79,5 +79,25 @@ exports.notionProxyTrigger = functions.pubsub
   .topic("notion-proxy")
   .onPublish(async (message) => {
     const { databaseId } = message.json;
-    await app.post("/query", { query: { databaseId } });
+    const currentTime = Date.now();
+    axios
+      .post(
+        `${NOTION_API_BASE_URL}/databases/${databaseId}/query`,
+        {},
+        {
+          headers: {
+            "Notion-Version": "2022-06-28",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${NOTION_API_KEY}`,
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data;
+        cache.set(databaseId, { data, timestamp: currentTime });
+      })
+      .catch((error) => {
+        console.error("Error fetching data from Notion API:", error);
+        res.status(500).json({ error: "An error occurred while fetching data from Notion API", message: error.message });
+      });
   });
