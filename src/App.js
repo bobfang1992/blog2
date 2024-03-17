@@ -2,6 +2,7 @@ import './App.css';
 import { Route, Routes, Link } from "react-router-dom"
 import Home from './Home'
 import About from './About'
+import { Analytics } from "@vercel/analytics/react"
 
 import { Component as HelloWorld } from "./blog/HelloWorld";
 
@@ -17,6 +18,7 @@ function NavBar(user) {
 function App() {
   return (
     <>
+      <Analytics />
       <div className="App">
         <h1>CS Grinding</h1>
         <NavBar />
